@@ -68,16 +68,14 @@ public class gamePage extends AppCompatActivity implements View.OnClickListener 
         score = findViewById(R.id.score);
         progress = findViewById(R.id.progress);
 
-        Log.d("yeet", "test");
-        getNames();
-        Log.d("yeet2", "test");
-
         buttonA.setOnClickListener(this);
         buttonB.setOnClickListener(this);
         buttonC.setOnClickListener(this);
         buttonD.setOnClickListener(this);
         endButton.setOnClickListener(this);
         picture.setOnClickListener(this);
+
+        getNames();
         nextQuestion();
     }
 
@@ -250,14 +248,11 @@ public class gamePage extends AppCompatActivity implements View.OnClickListener 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(getApplicationContext().getAssets().open("names.txt")))) {
         // try (BufferedReader br = new BufferedReader(new FileReader(new File("names.txt")))) {
             StringTokenizer st = new StringTokenizer(br.readLine(), ",");
-            Log.d("yeet3", "test");
             while (st.hasMoreTokens()) {
                 String s = st.nextToken();
                 names_to_learn.add(s);
-                Log.d("name", s);
                 total_names++;
             }
-            Log.d("yeet", "ya" + names_to_learn.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -272,7 +267,6 @@ public class gamePage extends AppCompatActivity implements View.OnClickListener 
     // Code borrowed from https://stackoverflow.com/questions/124671/picking-a-random-element-from-a-set
     private String drawRandomName(boolean isCorrectAnswer) {
         int size = names_to_learn.size();
-        Log.d("size", size+" ");
         int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
         int i = 0;
         String name = "";
