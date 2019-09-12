@@ -7,12 +7,12 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/start_button"
         android:layout_width="137dp"
         android:layout_height="77dp"
         android:layout_marginTop="10dp"
         android:text="PLAY GAME"
-        android:textSize="20"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +28,7 @@
         android:text="MATCH THE MEMBERS"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="#673AB7"
-        android:textSize="30"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

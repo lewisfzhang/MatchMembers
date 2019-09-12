@@ -2,13 +2,36 @@ package com.example.matchmembers;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    Button start;
+    TextView title;
+    public static final int UPDATE_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        start = findViewById(R.id.start_button);
+        title = findViewById(R.id.title);
+
+        start.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.start_button:
+                Intent intent = new Intent(MainActivity.this, gamePage.class);
+                startActivityForResult(intent, UPDATE_CODE);
+                break;
+        }
     }
 }
