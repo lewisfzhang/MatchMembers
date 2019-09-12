@@ -4,12 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -42,10 +45,13 @@ public class gamePage extends AppCompatActivity implements View.OnClickListener 
 
     HashSet<String> names_to_learn = new HashSet<>();
     int total_names = 0;
+    String current_picture_name = "";
 
     CountDownTimer currentTimer;
     long milliLeft = 0;
     static final char TIME_UP_KEY = '0';
+
+    static final int UPDATE_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +77,7 @@ public class gamePage extends AppCompatActivity implements View.OnClickListener 
         buttonC.setOnClickListener(this);
         buttonD.setOnClickListener(this);
         endButton.setOnClickListener(this);
+        picture.setOnClickListener(this);
         nextQuestion();
     }
 
@@ -78,6 +85,9 @@ public class gamePage extends AppCompatActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.picture:
+                timerPause();
+                addContact();
+                timerResume();
                 break;
             case R.id.buttonA:
                 processChoice('A');
@@ -137,6 +147,7 @@ public class gamePage extends AppCompatActivity implements View.OnClickListener 
 
         // update image to correct picture
         Context context = picture.getContext();
+        current_picture_name = names[0];
         int id = context.getResources().getIdentifier(getPicturePath(names[0]), "drawable", context.getPackageName());
         picture.setImageResource(id);
 
@@ -155,6 +166,33 @@ public class gamePage extends AppCompatActivity implements View.OnClickListener 
                     buttonD.setText(names[i]);
                     break;
             }
+        }
+    }
+
+    private void addContact() {
+        ArrayList <ContentProviderOperation> ops = new ArrayList<>();
+        ops.add(ContentProviderOperation.newInsert(
+                ContactsContract.RawContacts.CONTENT_URI)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+                .build());
+
+        ops.add(ContentProviderOperation.newInsert(
+                ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                .withValue(ContactsContract.Data.MIMETYPE,
+                        ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                .withValue(
+                        ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME,
+                        current_picture_name).build());
+
+        // Asking the Contact provider to create a new contact
+        try {
+            getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+            Toast.makeText(this, "Added Contact", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to Add Contact", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -245,7 +283,10 @@ public class gamePage extends AppCompatActivity implements View.OnClickListener 
             }
             i++;
         }
-        if (isCorrectAnswer) names_to_learn.remove(name); // only remove the correct name from the reamining list of names to iterate through
+
+        if (isCorrectAnswer) {
+            names_to_learn.remove(name); // only remove the correct name from the reamining list of names to iterate through
+        }
         return name;
     }
 
